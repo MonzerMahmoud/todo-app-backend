@@ -12,20 +12,20 @@ export class AuthService {
   ) {}
 
   async signIn(signInDto: SignInDto): Promise<any> {
-    const user = await this.usersService.findOne(signInDto.username);
+    const user = await this.usersService.findOneByUsername(signInDto.username);
 
     if (user?.password != signInDto.password) {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.userId, username: user.username };
+    const payload = { sub: user.id, username: user.username };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
   async signUp(signUpDto: SignUpDto) {
-    const user = await this.usersService.findOne(signUpDto.username);
+    const user = await this.usersService.findOneByUsername(signUpDto.username);
 
     if (user) {
       return {
@@ -38,7 +38,7 @@ export class AuthService {
       signUpDto.password,
     );
 
-    const payload = { sub: newUser.userId, username: newUser.username };
+    const payload = { sub: newUser.id, username: newUser.username };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
