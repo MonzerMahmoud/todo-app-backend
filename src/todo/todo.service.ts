@@ -14,7 +14,7 @@ export class TodoService {
     private jwtService: JwtService,
   ) {}
 
-  create(createTodoDto: CreateTodoDto, userId: number) {
+  async create(createTodoDto: CreateTodoDto, userId: number) {
     console.log(createTodoDto);
     const todo = new Todo();
     todo.todoString = createTodoDto.todoString;

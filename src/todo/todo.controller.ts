@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   Req,
+  ParseIntPipe,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -36,15 +39,17 @@ export class TodoController {
     return this.todoService.findAll(this.jwtService.decode(token).sub);
   }
 
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() request: Request) {
+  findOne(@Param('id') id: number, @Req() request: Request) {
+    console.log(typeof id);
     const token = request.headers.authorization.replace('Bearer ', '');
     return this.todoService.findOne(+id, this.jwtService.decode(token).sub);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateTodoDto: UpdateTodoDto,
     @Req() request: Request,
   ) {
@@ -57,7 +62,7 @@ export class TodoController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.todoService.remove(+id);
   }
 }
