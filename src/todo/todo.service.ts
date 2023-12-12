@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todo } from './entities/todo.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class TodoService {
@@ -12,6 +14,8 @@ export class TodoService {
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
     private jwtService: JwtService,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
   ) {}
 
   async create(createTodoDto: CreateTodoDto, userId: number) {
@@ -24,8 +28,14 @@ export class TodoService {
     return { message: 'Todo created!' };
   }
 
-  findAll(id: number) {
-    return this.todoRepository.findBy({ userId: id });
+  async findAll(id: number) {
+    // const value = await this.cacheManager.get(`${id}`);
+    // if (value) {
+    //   console.log(value);
+    // }
+    const todos = await this.todoRepository.findBy({ userId: id });
+    //await this.cacheManager.set(`${id}`, todos, 5000);
+    return todos;
   }
 
   async findOne(id: number, userId: number) {

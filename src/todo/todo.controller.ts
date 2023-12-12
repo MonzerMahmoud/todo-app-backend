@@ -10,14 +10,17 @@ import {
   ParseIntPipe,
   UsePipes,
   ValidationPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('todo')
+@UseInterceptors(CacheInterceptor)
 export class TodoController {
   constructor(
     private readonly todoService: TodoService,
